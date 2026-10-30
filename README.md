@@ -8,7 +8,7 @@ Sitio publicado: https://jesusftc.github.io/RutiApp/
 
 ## Cómo se usa
 
-La app tiene tres pestañas en la barra inferior.
+La app tiene cuatro pestañas en la barra inferior.
 
 ### 1. Perfil
 
@@ -38,6 +38,16 @@ Al tocar un día se abre una hoja con las porciones exactas de cada ingrediente,
 ### 3. Lista de compras
 
 Reúne todos los ingredientes de la semana, sumados y agrupados por categoría (cereales y granos, frutas, grasas saludables, lácteos, leguminosas, proteínas y verduras). Cada fila se puede marcar mientras haces las compras, y arriba se muestra cuántos artículos llevas. El botón **Compartir** envía la lista por la aplicación que elijas, o la copia al portapapeles si el dispositivo no permite compartir.
+
+### 4. Progreso
+
+Es una sección opcional para llevar el registro de tu peso. No necesitas pesarte con regularidad: la app funciona igual sin ningún registro.
+
+- Anota tu peso con la fecha que quieras (por defecto, hoy). Puedes hacerlo cada semana, cada mes o de vez en cuando; la gráfica se dibuja según las fechas reales, así que los registros no tienen que estar separados por el mismo tiempo.
+- Si registras dos o más pesos, ves tu último peso, el cambio total en kilogramos, los días transcurridos y una gráfica de línea.
+- Si anotas otro peso en una fecha que ya tiene registro, se reemplaza.
+- Cada registro se puede borrar con la x.
+- Con el botón **Usar ... kg en mi perfil** copias tu último peso a la pestaña Perfil. Después toca **Calcular mi semana** para actualizar tu plan con el peso nuevo.
 
 ## Cómo se calculan los resultados
 
@@ -104,6 +114,7 @@ Cada día se arma con una opción de desayuno, colación, comida y cena. Hay 7 o
 La versión web guarda en tu propio dispositivo, sin enviarlos a ningún servidor:
 
 - Tus datos del perfil y tus selecciones.
+- Tu historial de pesos, si decides registrarlo.
 - Los artículos que marcaste en la lista de compras.
 
 Al abrir la app de nuevo, tu perfil se recupera y el plan se recalcula con esos datos. Si borras los datos del navegador, esta información se pierde.

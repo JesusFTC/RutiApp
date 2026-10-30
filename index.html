@@ -53,6 +53,7 @@ h1{font-weight:300;font-size:30px;margin:10px 4px 2px;letter-spacing:-.3px}
 .it .t{flex:1;transition:color .25s}.it .q{color:var(--ink2);font-size:14px}
 .it input:checked~.t{text-decoration:line-through;color:var(--ink2)}
 .empty{text-align:center;padding:26px 10px}.empty b{font-size:17px}.empty p{color:var(--ink2);margin:6px 0 0}
+.ax{fill:var(--ink2);font-size:10px}.ln{fill:none;stroke:var(--ac);stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:1;animation:dr .9s ease-out}@keyframes dr{from{stroke-dashoffset:1}}.dt{fill:var(--ac)}.x{background:none;border:0;color:var(--ink2);font:inherit;font-size:22px;line-height:1;padding:0 4px}.lk{background:none;border:0;color:var(--ac);font:inherit;font-weight:600;font-size:13px;padding:8px 4px}#progreso .row input[type=date]{width:150px;color-scheme:dark}
 nav{position:fixed;left:0;right:0;bottom:0;padding:10px 16px calc(10px + env(safe-area-inset-bottom,0px));z-index:5}
 nav div{max-width:448px;margin:0 auto;display:flex;background:rgba(30,30,32,.72);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border:1px solid var(--line);border-radius:22px;padding:6px;box-shadow:0 10px 30px rgba(0,0,0,.6)}
 nav button{flex:1;border:0;background:none;color:var(--ink2);font:inherit;font-size:11px;font-weight:600;padding:8px 0 6px;border-radius:16px;display:flex;flex-direction:column;align-items:center;gap:3px;transition:background .25s,color .25s}
@@ -86,12 +87,14 @@ nav svg{width:24px;height:24px;fill:none;stroke:currentColor;stroke-width:1.8;st
 </section>
 <section id="menu"></section>
 <section id="lista"></section>
+<section id="progreso"></section>
 </div>
 <div id="sh"><div id="shc"></div></div>
 <nav><div>
 <button data-t="perfil" class="on"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-7 8-7s8 2.6 8 7"/></svg>Perfil</button>
 <button data-t="menu"><svg viewBox="0 0 24 24"><rect x="3.5" y="5" width="17" height="15.5" rx="3"/><path d="M3.5 10h17M8 3v4M16 3v4"/></svg>Menú</button>
 <button data-t="lista"><svg viewBox="0 0 24 24"><path d="M9 6h12M9 12h12M9 18h12"/><circle cx="4.5" cy="6" r="1"/><circle cx="4.5" cy="12" r="1"/><circle cx="4.5" cy="18" r="1"/></svg>Lista</button>
+<button data-t="progreso"><svg viewBox="0 0 24 24"><path d="M3 17l6-6 4 4 8-8"/><path d="M15 7h6v6"/></svg>Progreso</button>
 </div></nav>
 <script>
 const CATS={C:"Cereales y granos",L:"Leguminosas",P:"Proteínas",D:"Lácteos",V:"Verduras",F:"Frutas",G:"Grasas saludables"};
@@ -156,8 +159,11 @@ document.addEventListener("click",e=>{
  if(e.target.id==="sh")$("#sh").classList.remove("on");
  if(e.target.id==="share")share();
  if(e.target.id==="again")calcular(true);
+ if(e.target.id==="wadd")addW();
+ if(e.target.id==="wuse"){$("#peso").value=S.w[S.w.length-1].w;save();show("perfil")}
+ const x=e.target.closest("[data-del]");if(x){S.w.splice(+x.dataset.del,1);store("nsw",S.w);drawProg()}
 });
-function show(k){["perfil","menu","lista"].forEach(s=>{$("#"+s).classList.toggle("on",s===k)});document.querySelectorAll("nav button").forEach(b=>b.classList.toggle("on",b.dataset.t===k));window.scrollTo(0,0);document.querySelectorAll("#"+k+" .card").forEach((c,i)=>c.style.setProperty("--i",Math.min(i,9)));document.querySelectorAll("#"+k+" [data-n]").forEach(el=>{const to=+el.dataset.n,dc=(el.dataset.n.split(".")[1]||"").length,t0=performance.now();const f=t=>{const p=Math.min(1,(t-t0)/900),e=1-Math.pow(1-p,3);el.textContent=(to*e).toFixed(dc);if(p<1)requestAnimationFrame(f)};requestAnimationFrame(f)})}
+function show(k){["perfil","menu","lista","progreso"].forEach(s=>{$("#"+s).classList.toggle("on",s===k)});document.querySelectorAll("nav button").forEach(b=>b.classList.toggle("on",b.dataset.t===k));window.scrollTo(0,0);document.querySelectorAll("#"+k+" .card").forEach((c,i)=>c.style.setProperty("--i",Math.min(i,9)));document.querySelectorAll("#"+k+" [data-n]").forEach(el=>{const to=+el.dataset.n,dc=(el.dataset.n.split(".")[1]||"").length,t0=performance.now();const f=t=>{const p=Math.min(1,(t-t0)/900),e=1-Math.pow(1-p,3);el.textContent=(to*e).toFixed(dc);if(p<1)requestAnimationFrame(f)};requestAnimationFrame(f)})}
 function save(){store("ns",{v:["peso","estatura","edad"].map(i=>$("#"+i).value),sexo:S.sexo,act:S.act,obj:S.obj})}
 
 function calcular(sh){
@@ -205,12 +211,33 @@ async function share(){
  let t="LISTA DE COMPRAS SEMANAL\n";S.lista.forEach(([c,it])=>{t+=`\n${c.toUpperCase()}\n`;it.forEach(([k,v])=>{t+=`  [${S.done.includes(k)?"x":" "}] ${k} - ${fmtC(k,v)}\n`})});
  try{if(navigator.share)await navigator.share({title:"Lista de compras",text:t});else{await navigator.clipboard.writeText(t);alert("Lista copiada.")}}catch(e){}
 }
+function addW(){
+ const v=parseFloat($("#wv").value.replace(",",".")),d=$("#wd").value,er=$("#werr");
+ if(!(v>=20&&v<=300)||!d){er.textContent="Escribe un peso entre 20 y 300 kg y una fecha.";return}
+ S.w=S.w.filter(e=>e.d!==d).concat({d,w:Math.round(v*10)/10}).sort((a,b)=>a.d.localeCompare(b.d));
+ store("nsw",S.w);drawProg();
+}
+function drawProg(){
+ const L=S.w,n=L.length,last=L[n-1],hoy=new Date(Date.now()-new Date().getTimezoneOffset()*6e4).toISOString().slice(0,10),fd=d=>d.slice(8)+"/"+d.slice(5,7);
+ let h=`<h1>Progreso</h1><div class="cn"><span>Opcional: anota tu peso cuando quieras</span></div><div class="card"><div class="row"><span>Peso</span><input id="wv" inputmode="decimal" autocomplete="off" placeholder="${n?last.w:""}"><span class="u">kg</span></div><div class="row"><span>Fecha</span><input id="wd" type="date" value="${hoy}" max="${hoy}"></div><div class="err" id="werr"></div><button class="btn" id="wadd" style="margin-top:6px;padding:12px">Guardar peso</button></div>`;
+ if(!n)h+=`<div class="card empty"><b>Sin registros todavía</b><p>Es opcional: la app funciona igual sin registrar tu peso. Anótalo cuando quieras, sin horario fijo.</p></div>`;
+ else{
+  const xs=L.map(e=>+new Date(e.d)),x0=xs[0],x1=xs[n-1],ws=L.map(e=>e.w),lo=Math.min(...ws)-.5,hi=Math.max(...ws)+.5;
+  const X=t=>x1===x0?180:38+(t-x0)/(x1-x0)*292,Y=w=>118-(w-lo)/(hi-lo)*96,pts=L.map((e,i)=>[X(xs[i]).toFixed(1),Y(e.w).toFixed(1)]);
+  const diff=last.w-L[0].w,days=Math.round((x1-x0)/864e5);
+  h+=`<div class="card"><div class="sum"><div><div class="k">Último peso</div><div class="big">${last.w}</div><div class="k">kg · ${fd(last.d)}</div></div><div><div class="k">Cambio</div><div class="big">${n>1?(diff>0?"+":"")+diff.toFixed(1):"–"}</div><div class="k">${n>1?`kg en ${days} días`:"anota otro peso"}</div></div></div></div>`;
+  if(n>1)h+=`<div class="card"><svg viewBox="0 0 340 150" style="width:100%;display:block"><g style="stroke:var(--line)"><line x1="34" x2="334" y1="22" y2="22"/><line x1="34" x2="334" y1="118" y2="118"/></g><text class="ax" x="30" y="25" text-anchor="end">${hi.toFixed(1)}</text><text class="ax" x="30" y="121" text-anchor="end">${lo.toFixed(1)}</text><polyline class="ln" pathLength="1" points="${pts.map(p=>p.join(",")).join(" ")}"/>${pts.map(p=>`<circle class="dt" cx="${p[0]}" cy="${p[1]}" r="3.5"/>`).join("")}<text class="ax" x="38" y="142">${fd(L[0].d)}</text><text class="ax" x="334" y="142" text-anchor="end">${fd(last.d)}</text></svg></div>`;
+  h+=`<div class="ch">Registros</div><div class="card">`+L.map((e,i)=>`<div class="row"><span>${fd(e.d)}/${e.d.slice(0,4)}</span><span>${e.w} kg</span><button class="x" data-del="${i}" aria-label="Borrar registro">×</button></div>`).reverse().join("")+`</div>`;
+  if(parseFloat($("#peso").value.replace(",","."))!==last.w)h+=`<button class="lk" id="wuse">Usar ${last.w} kg en mi perfil</button>`;
+ }
+ $("#progreso").innerHTML=h;
+}
 $("#go").onclick=()=>calcular();
 ["peso","estatura","edad"].forEach(i=>$("#"+i).addEventListener("input",save));
-const sv=load("ns");if(sv){["peso","estatura","edad"].forEach((i,j)=>$("#"+i).value=sv.v[j]||"");["sexo","act","obj"].forEach(k=>{if(typeof sv[k]==="number")S[k]=sv[k]})}
+S.w=load("nsw")||[];const sv=load("ns");if(sv){["peso","estatura","edad"].forEach((i,j)=>$("#"+i).value=sv.v[j]||"");["sexo","act","obj"].forEach(k=>{if(typeof sv[k]==="number")S[k]=sv[k]})}
 drawSeg();
 const empty=t=>`<h1>${t[0]}</h1><p class="sub">${t[1]}</p><div class="card empty"><b>Aún no hay datos</b><p>Completa tu perfil y toca «Calcular mi semana».</p></div>`;
-$("#menu").innerHTML=empty(["Menú semanal","Tu plan de 7 días"]);$("#lista").innerHTML=empty(["Compras","Lo que necesitas esta semana"]);
+$("#menu").innerHTML=empty(["Menú semanal","Tu plan de 7 días"]);$("#lista").innerHTML=empty(["Compras","Lo que necesitas esta semana"]);drawProg();
 if(sv&&sv.v&&sv.v.every(x=>x)){S.done=load("nsd")||[];const d=S.done;calcular();S.done=d;drawLista();show("perfil")}
 </script>
 </body>
