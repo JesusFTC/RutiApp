@@ -28,12 +28,12 @@ Al tocar **Calcular mi semana** se generan el menú y la lista de compras, y la 
 Muestra un resumen y el plan de la semana:
 
 - **IMC** con su categoría: Bajo peso, Peso normal, Sobrepeso u Obesidad.
-- **Kcal por día**: la meta calórica calculada para ti, junto con tu gasto basal y tu gasto total.
+- **Kcal por día**: la meta calórica calculada para ti, junto con tu gasto basal y tu gasto total, y el promedio real de calorías que aporta el plan.
 - **Factor de porciones**: cuánto se escalan las cantidades de las recetas respecto al plan base.
-- Una tarjeta por día, de lunes a domingo, con cuatro comidas: desayuno, colación, comida y cena.
+- Una tarjeta por día, de lunes a domingo, con cuatro comidas: desayuno, colación, comida y cena. Cada tarjeta muestra las kcal del día y sus gramos de proteína (P), carbohidratos (C) y grasa (G), y cada platillo muestra sus kcal.
 - Un botón **Otro menú**, que genera una combinación distinta de platillos. Al usarlo, la lista de compras se actualiza y se reinician los artículos marcados.
 
-Al tocar un día se abre una hoja con las porciones exactas de cada ingrediente de ese día.
+Al tocar un día se abre una hoja con las porciones exactas de cada ingrediente, y las kcal y macronutrientes de cada comida y del día completo.
 
 ### 3. Lista de compras
 
@@ -82,11 +82,13 @@ Si eliges bajar peso y tu IMC indica bajo peso, la app muestra una advertencia r
 
 ### Menú y porciones
 
-Las recetas están definidas para un plan base de 2000 kcal al día. Tus porciones se obtienen multiplicando las cantidades por este factor:
+Cada ingrediente tiene una tabla nutricional aproximada (kcal, proteína, carbohidratos y grasa). Con ella se calcula cuántas calorías aporta el plan base, que en promedio son unas 1430 kcal al día. Tus porciones se obtienen multiplicando las cantidades de las recetas por este factor:
 
 ```
-factor = meta diaria / 2000      (limitado entre 0.70 y 1.60)
+factor = meta diaria / calorías del plan base      (limitado entre 0.60 y 2.20)
 ```
+
+Así, el promedio de calorías de tu semana coincide con tu meta diaria.
 
 Cada día se arma con una opción de desayuno, colación, comida y cena. Hay 7 opciones por cada tipo de comida, así que ningún platillo se repite durante la semana. Con los mismos datos, el menú siempre sale en el mismo orden; el botón **Otro menú** baraja el orden de las opciones para obtener una semana distinta, sin cambiar tus calorías ni tus porciones.
 
@@ -149,5 +151,6 @@ El archivo `RutiAPP.exe` queda en la carpeta `dist`.
 ## Limitaciones
 
 - El menú usa un conjunto fijo de 7 opciones por comida, de cocina mexicana; no contempla alergias, intolerancias ni dietas especiales como la vegetariana.
+- Los valores nutricionales por ingrediente son aproximados y toman medidas típicas (por ejemplo, una pieza de fruta de tamaño mediano). Las calorías de cada día varían según los platillos que le toquen; lo que coincide con tu meta es el promedio semanal.
 - Las calorías son una estimación basada en una fórmula general, y no sustituyen una evaluación individual.
 - El plan se diseñó para personas adultas sanas.

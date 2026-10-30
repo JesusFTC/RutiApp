@@ -40,7 +40,7 @@ h1{font-weight:300;font-size:30px;margin:10px 4px 2px;letter-spacing:-.3px}
 .day{cursor:pointer;transition:transform .15s}.day:active{transform:scale(.98)}.day h3{margin:0 0 8px;font-size:17px;display:flex;justify-content:space-between}
 .day h3 i{color:var(--ink2);font-style:normal}
 .day .s{color:var(--ac);font-size:11px;font-weight:700;margin-top:8px}
-.day .n{font-size:14px}
+.day .n{font-size:14px}.tk{font-size:13px;font-weight:600;color:var(--ac)}.mc{color:var(--ink2);font-size:12px;margin:-4px 0 4px}#sh .mc{margin:0 0 4px}.kc{color:var(--ink2);font-size:12px;white-space:nowrap;margin-left:4px}.tot{margin:12px 0 0;padding:10px 14px;border-radius:12px;background:rgba(255,255,255,.06);display:flex;justify-content:space-between;align-items:center;font-size:13px;gap:8px}.tot b{color:var(--ac);font-size:17px;white-space:nowrap}.tot span{color:var(--ink2);text-align:right}
 .cn{color:var(--ink2);font-size:13px;margin:0 4px 10px;display:flex;justify-content:space-between;align-items:center}
 .cn button{background:rgba(255,255,255,.08);border:1px solid var(--line);color:var(--ac);border-radius:12px;padding:6px 14px;font:inherit;font-weight:700;font-size:13px}
 .ch{color:var(--ink2);font-size:12px;margin:16px 4px 7px}
@@ -131,6 +131,11 @@ const COL=[["Manzana con almendras",{"Manzana":1,"Almendras":20}],
 ["Papaya con yogurt natural",{"Papaya":150,"Yogurt natural":100}]];
 const DIAS=["Lunes","Martes","Miércoles","Jueves","Viernes","Sábado","Domingo"];
 const SLOTS=[["Desayuno",DES],["Colación",COL],["Comida",COM],["Cena",CEN]];
+/* kcal, proteína, carbohidratos y grasa: por 100 g o 100 ml; por pieza si la unidad es pza. Valores aproximados. */
+const NUT={"Avena":[389,17,66,7],"Arroz":[360,7,79,.6],"Pasta integral":[350,13,71,2.5],"Granola":[450,10,64,18],"Tortilla de maíz":[64,1.7,13.5,.7],"Pan integral (rebanada)":[80,4,14,1],"Tostadas horneadas":[40,1,8,.5],"Frijoles cocidos":[127,8.7,22.8,.5],"Lentejas":[352,25,63,1.1],"Huevo":[72,6.3,.4,4.8],"Pechuga de pollo":[120,22.5,0,2.6],"Filete de pescado":[100,20,0,2],"Carne de res magra":[145,21,0,6],"Atún en agua (lata)":[110,25,0,1],"Leche":[61,3.2,4.8,3.3],"Yogurt griego":[97,9,4,5],"Yogurt natural":[61,3.5,4.7,3.3],"Queso panela":[216,17,3,15],"Queso Oaxaca":[300,21,2,23],"Jitomate":[22,1,4.8,.2],"Tomate verde":[32,1,5.8,1],"Espinaca":[23,2.9,3.6,.4],"Lechuga":[15,1.4,2.9,.2],"Zanahoria":[29,.7,6.8,.2],"Calabacita":[34,2.4,6.2,.6],"Brócoli":[34,2.8,7,.4],"Nopales":[16,1.3,3.3,.1],"Champiñones":[22,3.1,3.3,.3],"Cebolla":[44,1.2,10,.1],"Pepino":[30,1.3,7.2,.2],"Papa":[77,2,17,.1],"Plátano":[105,1.3,27,.4],"Papaya":[43,.5,11,.3],"Manzana":[95,.5,25,.3],"Fresa":[32,.7,7.7,.3],"Aguacate":[240,3,13,22],"Limón":[17,.6,5.4,.2],"Nueces":[654,15,14,65],"Almendras":[579,21,22,50],"Cacahuate natural":[567,26,16,49],"Aceite de oliva":[812,0,0,92]};
+const mac=g=>{const r=[0,0,0,0];for(const k in g){const u=ING[k][1]==="pza"?g[k]:g[k]/100;NUT[k].forEach((v,i)=>r[i]+=v*u)}return r};
+const BASE=SLOTS.reduce((a,[,o])=>a+o.reduce((b,[,g])=>b+mac(g)[0],0)/o.length,0);
+const R=Math.round,dayM=i=>SLOTS.reduce((a,[s])=>{const m=mac(S.plan[i][s][1]);return a.map((x,j)=>x+m[j])},[0,0,0,0]),mline=m=>`P ${R(m[1])} g · C ${R(m[2])} g · G ${R(m[3])} g`;
 const ACTF=[1.2,1.375,1.55,1.725],OBJA=[-400,0,300],OBJN=["bajar de peso","mantener peso","subir masa muscular"];
 const OPT={sexo:["Mujer","Hombre"],act:["Sedentario","Ligera","Moderada","Alta"],obj:["Bajar peso","Mantener","Subir masa"]};
 const CAPS=["Poco o nada de ejercicio","Ejercicio 1-3 días por semana","Ejercicio 3-5 días por semana","Ejercicio 6-7 días por semana"];
@@ -165,14 +170,14 @@ function calcular(sh){
  const imc=peso/((est/100)**2);
  const tmb=10*peso+6.25*est-5*edad+(S.sexo?5:-161),gasto=tmb*ACTF[S.act];
  const meta=Math.round(Math.max(gasto+OBJA[S.obj],S.sexo?1500:1200));
- const factor=Math.max(.7,Math.min(1.6,meta/2000));
+ const factor=Math.max(.6,Math.min(2.2,meta/BASE));
  if(sh===true){S.ord={};SLOTS.forEach(([s,o])=>{const a=o.map((_,j)=>j);for(let j=a.length-1;j>0;j--){const k=Math.floor(Math.random()*(j+1));[a[j],a[k]]=[a[k],a[j]]}S.ord[s]=a})}else S.ord={};
  S.plan=DIAS.map((_,i)=>{const d={};SLOTS.forEach(([s,o])=>{const [n,g]=o[(S.ord[s]||[])[i]??i%o.length];d[s]=[n,Object.fromEntries(Object.entries(g).map(([k,v])=>[k,v*factor]))]});return d});
  const tot={};S.plan.forEach(d=>Object.values(d).forEach(([,g])=>{for(const k in g)tot[k]=(tot[k]||0)+g[k]}));
  const por={};for(const k in tot)(por[ING[k][0]]=por[ING[k][0]]||[]).push([k,tot[k]]);
  S.lista=Object.keys(por).map(c=>[CATS[c],por[c].sort((a,b)=>a[0].localeCompare(b[0],"es"))]).sort((a,b)=>a[0].localeCompare(b[0],"es"));
  S.done=[];store("nsd",S.done);
- S.res={imc,cat:catIMC(imc),tmb:Math.round(tmb),gasto:Math.round(gasto),meta,factor,obj:OBJN[S.obj],aviso:S.obj===0&&imc<18.5};
+ S.res={imc,cat:catIMC(imc),tmb:Math.round(tmb),gasto:Math.round(gasto),meta,factor,avg:R(S.plan.reduce((a,d)=>a+SLOTS.reduce((b,[s])=>b+mac(d[s][1])[0],0),0)/7),obj:OBJN[S.obj],aviso:S.obj===0&&imc<18.5};
  save();drawMenu();drawLista();show("menu");
 }
 function drawMenu(){
@@ -180,12 +185,12 @@ function drawMenu(){
  $("#menu").innerHTML=`<h1>Menú semanal</h1><div class="cn"><span>Tu plan de 7 días</span><button id="again">Otro menú</button></div>
  <div class="card"><div class="sum"><div><div class="k">IMC</div><div class="big" data-n="${r.imc.toFixed(1)}">${r.imc.toFixed(1)}</div><div class="cat" style="color:${CATC[r.cat]}">${r.cat}</div></div>
  <div><div class="k">Kcal por día</div><div class="big" data-n="${r.meta}">${r.meta}</div><div class="k">basal ${r.tmb} · gasto ${r.gasto}</div></div></div>
- <div class="k" style="margin-top:12px">Objetivo: ${r.obj} · porciones ×${r.factor.toFixed(2)}</div>
+ <div class="k" style="margin-top:12px">Objetivo: ${r.obj} · porciones ×${r.factor.toFixed(2)}<br>Promedio del plan: ${r.avg} kcal por día</div>
  ${r.aviso?`<div class="warn">⚠ Tu IMC indica bajo peso; bajar de peso no es lo recomendable. Consulta a un profesional.</div>`:""}</div>`+
- DIAS.map((d,i)=>`<div class="card day" data-d="${i}"><h3>${d}<i>›</i></h3>${SLOTS.map(([s])=>`<div class="s">${s}</div><div class="n">${S.plan[i][s][0]}</div>`).join("")}</div>`).join("");
+ DIAS.map((d,i)=>`<div class="card day" data-d="${i}"><h3>${d}<span><b class="tk">${R(dayM(i)[0])} kcal</b> <i>›</i></span></h3><div class="mc">${mline(dayM(i))}</div>${SLOTS.map(([s])=>`<div class="s">${s}</div><div class="n">${S.plan[i][s][0]} <span class="kc">${R(mac(S.plan[i][s][1])[0])} kcal</span></div>`).join("")}</div>`).join("");
 }
 function openDay(i){
- $("#shc").innerHTML=`<h2>${DIAS[i]}</h2><div class="k">Porciones exactas de tu plan</div>`+SLOTS.map(([s])=>{const [n,g]=S.plan[i][s];return `<div class="m">${s}</div><b>${n}</b>`+Object.entries(g).map(([k,v])=>`<div class="p"><span>${k}</span><span>${fmtP(k,v)}</span></div>`).join("")}).join("");
+ $("#shc").innerHTML=`<h2>${DIAS[i]}</h2><div class="k">Porciones exactas de tu plan · valores aproximados</div><div class="tot"><b>${R(dayM(i)[0])} kcal</b><span>${mline(dayM(i))}</span></div>`+SLOTS.map(([s])=>{const [n,g]=S.plan[i][s];return `<div class="m">${s} · ${R(mac(g)[0])} kcal</div><b>${n}</b><div class="mc">${mline(mac(g))}</div>`+Object.entries(g).map(([k,v])=>`<div class="p"><span>${k}</span><span>${fmtP(k,v)}</span></div>`).join("")}).join("");
  $("#sh").classList.add("on");
 }
 function drawLista(){
