@@ -1,4 +1,4 @@
-<!DOCTYPE html >
+<!DOCTYPE html>
 <html lang="es">
 <head>
 <meta charset="utf-8">
@@ -12,7 +12,7 @@ html{scroll-padding-top:env(safe-area-inset-top,0px);background:#050505}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 body{margin:0;min-height:100vh;color:var(--ink);font:15px/1.4 -apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;background:radial-gradient(420px 360px at 100% 18%,rgba(255,110,60,.17),transparent 70%),radial-gradient(380px 300px at 0% 60%,rgba(255,255,255,.04),transparent 70%),linear-gradient(#0e0e0f,#030303) fixed}
 #app{max-width:480px;margin:0 auto;padding:18px 16px 110px}
-section{display:none}section.on{display:block}
+section{display:none}section.on{display:block}section.on>h1,section.on>.sub,section.on>.lab,section.on>.cn{animation:rise .45s both}section.on .card{animation:rise .5s cubic-bezier(.2,.8,.25,1) both;animation-delay:calc(var(--i,0)*55ms + 70ms)}
 h1{font-weight:300;font-size:30px;margin:10px 4px 2px;letter-spacing:-.3px}
 .sub{color:var(--ink2);margin:0 4px 18px;font-size:13px}
 .card{background:linear-gradient(145deg,rgba(255,255,255,.11),rgba(255,255,255,.05));border:1px solid var(--line);border-radius:16px;backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);padding:14px 16px;margin-bottom:12px;box-shadow:0 8px 24px rgba(0,0,0,.35)}
@@ -22,12 +22,12 @@ h1{font-weight:300;font-size:30px;margin:10px 4px 2px;letter-spacing:-.3px}
 .row input:focus{border-color:var(--ac)}
 .u{color:var(--ink2);width:34px;font-size:13px}
 .lab{color:var(--ink2);font-size:12px;margin:16px 4px 7px}
-.seg{display:flex;background:rgba(255,255,255,.07);border:1px solid var(--line);border-radius:14px;padding:3px}
-.seg button{flex:1;border:0;background:none;color:var(--ink2);font:inherit;font-size:13px;font-weight:600;padding:9px 2px;border-radius:11px;transition:.18s}
-.seg button.on{background:#565659;color:var(--ink);box-shadow:0 2px 6px rgba(0,0,0,.5)}
+.seg{--i:0;--n:1;position:relative;display:flex;background:rgba(255,255,255,.07);border:1px solid var(--line);border-radius:14px;padding:3px}.seg::before{content:"";position:absolute;top:3px;bottom:3px;left:3px;width:calc((100% - 6px)/var(--n));border-radius:11px;background:#565659;box-shadow:0 2px 6px rgba(0,0,0,.5);transform:translateX(calc(var(--i)*100%));transition:transform .38s cubic-bezier(.3,1.25,.5,1)}
+.seg button{position:relative;flex:1;border:0;background:none;color:var(--ink2);font:inherit;font-size:13px;font-weight:600;padding:9px 2px;border-radius:11px;transition:color .25s}
+.seg button.on{color:var(--ink)}
 .cap{color:var(--ink2);font-size:12px;margin:7px 4px 0}
 .btn{width:100%;border:1px solid rgba(255,255,255,.28);color:#fff;font:inherit;font-weight:700;font-size:16px;padding:15px;border-radius:16px;margin-top:22px;background:linear-gradient(#ff8a58,#ee5c2e);box-shadow:0 8px 22px rgba(255,110,60,.32)}
-.btn:active{transform:scale(.98)}
+.btn{transition:transform .15s,box-shadow .15s}.btn:active{transform:scale(.97);box-shadow:0 3px 10px rgba(255,110,60,.3)}.err.shk{animation:shk .4s}
 .err{color:#ff8a6b;font-size:13px;margin:10px 4px 0;min-height:18px}
 .note{color:var(--ink2);font-size:11px;text-align:center;margin-top:16px}
 .sum{display:grid;grid-template-columns:1fr 1fr;gap:0}
@@ -35,7 +35,7 @@ h1{font-weight:300;font-size:30px;margin:10px 4px 2px;letter-spacing:-.3px}
 .k{color:var(--ink2);font-size:11px}.big{font-size:38px;font-weight:300;line-height:1.15}
 .cat{font-weight:700;font-size:13px}
 .warn{color:#ff9a62;font-size:13px;font-weight:600;margin-top:10px}
-.day{cursor:pointer}.day h3{margin:0 0 8px;font-size:17px;display:flex;justify-content:space-between}
+.day{cursor:pointer;transition:transform .15s}.day:active{transform:scale(.98)}.day h3{margin:0 0 8px;font-size:17px;display:flex;justify-content:space-between}
 .day h3 i{color:var(--ink2);font-style:normal}
 .day .s{color:var(--ac);font-size:11px;font-weight:700;margin-top:8px}
 .day .n{font-size:14px}
@@ -45,21 +45,21 @@ h1{font-weight:300;font-size:30px;margin:10px 4px 2px;letter-spacing:-.3px}
 .it{display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--line)}
 .it:last-child{border:0}
 .it input{display:none}
-.bx{width:24px;height:24px;border-radius:50%;border:1.8px solid #87878c;background:rgba(255,255,255,.07);flex:none;display:grid;place-items:center;transition:.15s}
+.bx{width:24px;height:24px;border-radius:50%;border:1.8px solid #87878c;background:rgba(255,255,255,.07);flex:none;display:grid;place-items:center;transition:background .2s,border-color .2s}
 .it input:checked+.bx{background:var(--ac);border-color:var(--ac)}
-.it input:checked+.bx::after{content:"";width:6px;height:11px;border:solid #fff;border-width:0 2.4px 2.4px 0;transform:rotate(45deg) translate(-1px,-1px)}
-.it .t{flex:1}.it .q{color:var(--ink2);font-size:14px}
+.bx::after{content:"";width:6px;height:11px;border:solid #fff;border-width:0 2.4px 2.4px 0;transform:rotate(45deg) translate(-1px,-1px) scale(0);transition:transform .22s cubic-bezier(.3,1.6,.5,1)}.it input:checked+.bx{animation:pop .3s}.it input:checked+.bx::after{transform:rotate(45deg) translate(-1px,-1px) scale(1)}
+.it .t{flex:1;transition:color .25s}.it .q{color:var(--ink2);font-size:14px}
 .it input:checked~.t{text-decoration:line-through;color:var(--ink2)}
 .empty{text-align:center;padding:26px 10px}.empty b{font-size:17px}.empty p{color:var(--ink2);margin:6px 0 0}
 nav{position:fixed;left:0;right:0;bottom:0;padding:10px 16px calc(10px + env(safe-area-inset-bottom,0px));z-index:5}
 nav div{max-width:448px;margin:0 auto;display:flex;background:rgba(30,30,32,.72);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border:1px solid var(--line);border-radius:22px;padding:6px;box-shadow:0 10px 30px rgba(0,0,0,.6)}
-nav button{flex:1;border:0;background:none;color:var(--ink2);font:inherit;font-size:11px;font-weight:600;padding:8px 0 6px;border-radius:16px;display:flex;flex-direction:column;align-items:center;gap:3px}
-nav button.on{background:rgba(255,255,255,.12);color:var(--ac)}
+nav button{flex:1;border:0;background:none;color:var(--ink2);font:inherit;font-size:11px;font-weight:600;padding:8px 0 6px;border-radius:16px;display:flex;flex-direction:column;align-items:center;gap:3px;transition:background .25s,color .25s}
+nav button.on{background:rgba(255,255,255,.12);color:var(--ac)}nav button.on svg{animation:pop .35s}
 nav svg{width:24px;height:24px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
-#sh{position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:9;display:none;align-items:flex-end}
-#sh.on{display:flex}
-#sh>div{width:100%;max-width:480px;margin:0 auto;max-height:88%;overflow:auto;background:#121213;border:1px solid var(--line);border-radius:24px 24px 0 0;padding:20px 20px calc(24px + env(safe-area-inset-bottom,0px));animation:up .22s ease-out}
-@keyframes up{from{transform:translateY(40px);opacity:0}}
+#sh{position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:9;display:flex;align-items:flex-end;opacity:0;pointer-events:none;transition:opacity .3s}
+#sh.on{opacity:1;pointer-events:auto}
+#sh>div{width:100%;max-width:480px;margin:0 auto;max-height:88%;overflow:auto;background:#121213;border:1px solid var(--line);border-radius:24px 24px 0 0;padding:20px 20px calc(24px + env(safe-area-inset-bottom,0px));transform:translateY(100%);transition:transform .4s cubic-bezier(.2,.9,.25,1)}#sh.on>div{transform:none}
+@keyframes rise{from{opacity:0;transform:translateY(16px)}}@keyframes pop{40%{transform:scale(1.25)}}@keyframes shk{20%,60%{transform:translateX(-6px)}40%,80%{transform:translateX(6px)}}@media(prefers-reduced-motion:reduce){*,::before,::after{animation:none!important;transition:none!important}}
 #sh h2{font-weight:300;font-size:26px;margin:0 0 2px}
 .m{color:var(--ac);font-size:11px;font-weight:700;margin-top:16px}
 .m+b{display:block;margin:2px 0 4px}
@@ -132,7 +132,7 @@ const fmtP=(n,c)=>{const u=ING[n][1];if(u==="pza"){const x=c<1.5?Math.round(c*2)
 const store=(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}};
 const load=k=>{try{return JSON.parse(localStorage.getItem(k))}catch(e){return null}};
 
-function drawSeg(){document.querySelectorAll(".seg").forEach(el=>{const n=el.dataset.s;el.innerHTML=OPT[n].map((o,i)=>`<button data-i="${i}" class="${S[n]===i?"on":""}">${o}</button>`).join("")});$("#cap").textContent=CAPS[S.act]}
+function drawSeg(){document.querySelectorAll(".seg").forEach(el=>{const n=el.dataset.s;el.style.setProperty("--i",S[n]);el.style.setProperty("--n",OPT[n].length);if(!el.children.length)el.innerHTML=OPT[n].map((o,i)=>`<button data-i="${i}">${o}</button>`).join("");[...el.children].forEach((b,i)=>b.classList.toggle("on",S[n]===i))});$("#cap").textContent=CAPS[S.act]}
 document.addEventListener("click",e=>{
  const b=e.target.closest(".seg button");if(b){S[b.parentNode.dataset.s]=+b.dataset.i;drawSeg();save();return}
  const t=e.target.closest("nav button");if(t){show(t.dataset.t);return}
@@ -140,16 +140,16 @@ document.addEventListener("click",e=>{
  if(e.target.id==="sh")$("#sh").classList.remove("on");
  if(e.target.id==="share")share();
 });
-function show(k){["perfil","menu","lista"].forEach(s=>{$("#"+s).classList.toggle("on",s===k)});document.querySelectorAll("nav button").forEach(b=>b.classList.toggle("on",b.dataset.t===k));window.scrollTo(0,0)}
+function show(k){["perfil","menu","lista"].forEach(s=>{$("#"+s).classList.toggle("on",s===k)});document.querySelectorAll("nav button").forEach(b=>b.classList.toggle("on",b.dataset.t===k));window.scrollTo(0,0);document.querySelectorAll("#"+k+" .card").forEach((c,i)=>c.style.setProperty("--i",Math.min(i,9)));document.querySelectorAll("#"+k+" [data-n]").forEach(el=>{const to=+el.dataset.n,dc=(el.dataset.n.split(".")[1]||"").length,t0=performance.now();const f=t=>{const p=Math.min(1,(t-t0)/900),e=1-Math.pow(1-p,3);el.textContent=(to*e).toFixed(dc);if(p<1)requestAnimationFrame(f)};requestAnimationFrame(f)})}
 function save(){store("ns",{v:["peso","estatura","edad"].map(i=>$("#"+i).value),sexo:S.sexo,act:S.act,obj:S.obj})}
 
 function calcular(){
  const f=i=>parseFloat($("#"+i).value.replace(",","."));
  let peso=f("peso"),est=f("estatura");const edad=parseInt($("#edad").value);
- const er=$("#err");er.textContent="";
- if([peso,est,edad].some(isNaN)){er.textContent="Revisa que peso, estatura y edad sean números.";return}
+ const er=$("#err");er.textContent="";er.classList.remove("shk");const bad=m=>{er.textContent=m;void er.offsetWidth;er.classList.add("shk")};
+ if([peso,est,edad].some(isNaN)){bad("Revisa que peso, estatura y edad sean números.");return}
  if(est<3)est*=100;
- if(!(peso>=20&&peso<=300&&est>=100&&est<=250&&edad>=14&&edad<=100)){er.textContent="Peso: 20-300 kg · Estatura: 100-250 cm · Edad: 14-100 años.";return}
+ if(!(peso>=20&&peso<=300&&est>=100&&est<=250&&edad>=14&&edad<=100)){bad("Peso: 20-300 kg · Estatura: 100-250 cm · Edad: 14-100 años.");return}
  const imc=peso/((est/100)**2);
  const tmb=10*peso+6.25*est-5*edad+(S.sexo?5:-161),gasto=tmb*ACTF[S.act];
  const meta=Math.round(Math.max(gasto+OBJA[S.obj],S.sexo?1500:1200));
@@ -165,8 +165,8 @@ function calcular(){
 function drawMenu(){
  const r=S.res;
  $("#menu").innerHTML=`<h1>Menú semanal</h1><p class="sub">Tu plan de 7 días</p>
- <div class="card"><div class="sum"><div><div class="k">IMC</div><div class="big">${r.imc.toFixed(1)}</div><div class="cat" style="color:${CATC[r.cat]}">${r.cat}</div></div>
- <div><div class="k">Kcal por día</div><div class="big">${r.meta}</div><div class="k">basal ${r.tmb} · gasto ${r.gasto}</div></div></div>
+ <div class="card"><div class="sum"><div><div class="k">IMC</div><div class="big" data-n="${r.imc.toFixed(1)}">${r.imc.toFixed(1)}</div><div class="cat" style="color:${CATC[r.cat]}">${r.cat}</div></div>
+ <div><div class="k">Kcal por día</div><div class="big" data-n="${r.meta}">${r.meta}</div><div class="k">basal ${r.tmb} · gasto ${r.gasto}</div></div></div>
  <div class="k" style="margin-top:12px">Objetivo: ${r.obj} · porciones ×${r.factor.toFixed(2)}</div>
  ${r.aviso?`<div class="warn">⚠ Tu IMC indica bajo peso; bajar de peso no es lo recomendable. Consulta a un profesional.</div>`:""}</div>`+
  DIAS.map((d,i)=>`<div class="card day" data-d="${i}"><h3>${d}<i>›</i></h3>${SLOTS.map(([s])=>`<div class="s">${s}</div><div class="n">${S.plan[i][s][0]}</div>`).join("")}</div>`).join("");
