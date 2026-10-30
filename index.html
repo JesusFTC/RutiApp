@@ -8,6 +8,7 @@
 <meta name="apple-mobile-web-app-title" content="RutiAPP">
 <meta name="application-name" content="RutiAPP">
 <title>RutiAPP</title>
+<link rel="icon" type="image/png" href="/favicon.png">
 <style>
 :root{--ink:#f2f2f2;--ink2:#9b9b9f;--ac:#ff7a45;--line:rgba(255,255,255,.11);color-scheme:dark;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
 html{scroll-padding-top:env(safe-area-inset-top,0px);background:#050505}
@@ -54,6 +55,7 @@ h1{font-weight:300;font-size:30px;margin:10px 4px 2px;letter-spacing:-.3px}
 .it input:checked~.t{text-decoration:line-through;color:var(--ink2)}
 .empty{text-align:center;padding:26px 10px}.empty b{font-size:17px}.empty p{color:var(--ink2);margin:6px 0 0}
 .ax{fill:var(--ink2);font-size:10px}.ln{fill:none;stroke:var(--ac);stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:1;animation:dr .9s ease-out}@keyframes dr{from{stroke-dashoffset:1}}.dt{fill:var(--ac)}.x{background:none;border:0;color:var(--ink2);font:inherit;font-size:22px;line-height:1;padding:0 4px}.lk{background:none;border:0;color:var(--ac);font:inherit;font-weight:600;font-size:13px;padding:8px 4px}#progreso .row input[type=date]{width:150px;color-scheme:dark}
+.chips{display:flex;flex-wrap:wrap;gap:8px}.chip{border:1px solid var(--line);background:rgba(255,255,255,.07);color:var(--ink2);font:inherit;font-size:13px;font-weight:600;padding:8px 14px;border-radius:20px;transition:background .2s,color .2s,border-color .2s}.chip.on{background:rgba(255,122,69,.18);border-color:var(--ac);color:var(--ac)}.av{width:100%;background:#28282a;border:1px solid var(--line);color:var(--ink);border-radius:14px;padding:12px 14px;font:inherit;outline:none}.av:focus{border-color:var(--ac)}
 nav{position:fixed;left:0;right:0;bottom:0;padding:10px 16px calc(10px + env(safe-area-inset-bottom,0px));z-index:5}
 nav div{max-width:448px;margin:0 auto;display:flex;background:rgba(30,30,32,.72);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border:1px solid var(--line);border-radius:22px;padding:6px;box-shadow:0 10px 30px rgba(0,0,0,.6)}
 nav button{flex:1;border:0;background:none;color:var(--ink2);font:inherit;font-size:11px;font-weight:600;padding:8px 0 6px;border-radius:16px;display:flex;flex-direction:column;align-items:center;gap:3px;transition:background .25s,color .25s}
@@ -81,6 +83,8 @@ nav svg{width:24px;height:24px;fill:none;stroke:currentColor;stroke-width:1.8;st
 <div class="lab">Sexo</div><div class="seg" data-s="sexo"></div>
 <div class="lab">Actividad física</div><div class="seg" data-s="act"></div><div class="cap" id="cap"></div>
 <div class="lab">Objetivo</div><div class="seg" data-s="obj"></div>
+<div class="lab">Preferencias</div><div class="chips" id="chips"></div><div class="cap">Vegetariano incluye huevo y lácteos. Filtra platillos por ingredientes; con alergias graves, revisa siempre las etiquetas.</div>
+<div class="lab">Ingredientes que quieres evitar</div><input class="av" id="av" placeholder="Ej. pescado, nopales" autocomplete="off">
 <button class="btn" id="go">Calcular mi semana</button>
 <div class="err" id="err"></div>
 <div class="note">Orientativo · no sustituye a un nutriólogo</div>
@@ -110,28 +114,45 @@ const DES=[["Avena con plátano y nueces",{"Avena":60,"Leche":250,"Plátano":1,"
 ["Omelette de espinaca con pan integral",{"Huevo":3,"Espinaca":50,"Pan integral (rebanada)":2,"Queso panela":40}],
 ["Chilaquiles verdes con pollo",{"Tortilla de maíz":3,"Pechuga de pollo":80,"Tomate verde":100,"Queso panela":30}],
 ["Hot cakes de avena con fresas",{"Avena":50,"Huevo":1,"Leche":150,"Fresa":100}],
-["Molletes con frijoles y jitomate",{"Pan integral (rebanada)":2,"Frijoles cocidos":80,"Queso Oaxaca":40,"Jitomate":1}]];
+["Molletes con frijoles y jitomate",{"Pan integral (rebanada)":2,"Frijoles cocidos":80,"Queso Oaxaca":40,"Jitomate":1}],
+["Frijoles con aguacate y tortillas",{"Frijoles cocidos":100,"Aguacate":0.5,"Tortilla de maíz":3,"Jitomate":1}],
+["Tacos de papa con frijoles",{"Papa":150,"Frijoles cocidos":80,"Tortilla de maíz":3,"Cebolla":0.5}],
+["Ensalada de fruta con nueces",{"Papaya":150,"Plátano":1,"Manzana":1,"Nueces":15}],
+["Ensalada de fruta fresca",{"Papaya":200,"Manzana":1,"Plátano":1,"Fresa":100}],
+["Tacos de nopales con huevo",{"Huevo":2,"Nopales":100,"Tortilla de maíz":3}]];
 const COM=[["Pechuga a la plancha con arroz y ensalada",{"Pechuga de pollo":150,"Arroz":70,"Lechuga":60,"Jitomate":1,"Aceite de oliva":10}],
 ["Lentejas con verduras y tortillas",{"Lentejas":70,"Zanahoria":1,"Calabacita":1,"Tortilla de maíz":2}],
 ["Pescado al horno con papa y brócoli",{"Filete de pescado":160,"Papa":200,"Brócoli":120,"Limón":1}],
 ["Tacos de res con nopales",{"Carne de res magra":130,"Tortilla de maíz":3,"Nopales":100,"Cebolla":1}],
 ["Pasta integral con atún y verduras",{"Pasta integral":80,"Atún en agua (lata)":1,"Jitomate":2,"Calabacita":1}],
 ["Caldo de pollo con verduras",{"Pechuga de pollo":120,"Zanahoria":1,"Calabacita":1,"Papa":100,"Arroz":50}],
-["Bowl de res con arroz y brócoli",{"Carne de res magra":120,"Arroz":70,"Brócoli":100,"Zanahoria":1}]];
+["Bowl de res con arroz y brócoli",{"Carne de res magra":120,"Arroz":70,"Brócoli":100,"Zanahoria":1}],
+["Frijoles con arroz y nopales",{"Frijoles cocidos":100,"Arroz":70,"Nopales":100,"Aguacate":0.5}],
+["Pasta integral con champiñones y espinaca",{"Pasta integral":80,"Champiñones":100,"Espinaca":50,"Aceite de oliva":10}],
+["Arroz con verduras y huevo",{"Arroz":70,"Zanahoria":1,"Calabacita":1,"Huevo":2}],
+["Tacos de champiñón y nopales",{"Tortilla de maíz":3,"Champiñones":100,"Nopales":100,"Cebolla":1}],
+["Sopa de lentejas y papa",{"Lentejas":70,"Papa":150,"Zanahoria":1,"Jitomate":1}]];
 const CEN=[["Quesadillas de champiñón",{"Tortilla de maíz":3,"Queso Oaxaca":50,"Champiñones":100}],
 ["Ensalada de atún con aguacate",{"Atún en agua (lata)":1,"Lechuga":80,"Aguacate":0.5,"Pan integral (rebanada)":2}],
 ["Sándwich de pollo",{"Pan integral (rebanada)":2,"Pechuga de pollo":100,"Lechuga":30,"Jitomate":1}],
 ["Sopa de verduras con huevo",{"Zanahoria":1,"Calabacita":1,"Papa":100,"Huevo":2}],
 ["Tostadas de frijol con aguacate",{"Tostadas horneadas":3,"Frijoles cocidos":100,"Aguacate":0.5,"Lechuga":40}],
 ["Omelette de champiñón",{"Huevo":3,"Champiñones":100,"Queso panela":30}],
-["Ensalada de lentejas",{"Lentejas":60,"Jitomate":1,"Pepino":1,"Lechuga":40,"Aceite de oliva":10}]];
+["Ensalada de lentejas",{"Lentejas":60,"Jitomate":1,"Pepino":1,"Lechuga":40,"Aceite de oliva":10}],
+["Tacos de nopales con frijoles",{"Tortilla de maíz":3,"Nopales":100,"Frijoles cocidos":80,"Cebolla":0.5}],
+["Sopa de calabacita y papa",{"Calabacita":2,"Papa":100,"Cebolla":0.5,"Aceite de oliva":10}],
+["Ensalada de pollo y aguacate",{"Pechuga de pollo":100,"Lechuga":60,"Aguacate":0.5,"Jitomate":1}],
+["Pescado con ensalada fresca",{"Filete de pescado":120,"Lechuga":60,"Pepino":1,"Limón":1}]];
 const COL=[["Manzana con almendras",{"Manzana":1,"Almendras":20}],
 ["Palitos de zanahoria y pepino con limón",{"Zanahoria":1,"Pepino":1,"Limón":1}],
 ["Yogurt natural con fresas",{"Yogurt natural":150,"Fresa":100}],
 ["Plátano con cacahuates",{"Plátano":1,"Cacahuate natural":20}],
 ["Yogurt griego con nueces",{"Yogurt griego":150,"Nueces":15}],
 ["Tostadas con aguacate",{"Tostadas horneadas":2,"Aguacate":0.5}],
-["Papaya con yogurt natural",{"Papaya":150,"Yogurt natural":100}]];
+["Papaya con yogurt natural",{"Papaya":150,"Yogurt natural":100}],
+["Fruta picada con limón",{"Manzana":1,"Papaya":100,"Limón":1}],
+["Plátano con fresas",{"Plátano":1,"Fresa":100}],
+["Pepino con aguacate y limón",{"Pepino":1,"Aguacate":0.5,"Limón":1}]];
 const DIAS=["Lunes","Martes","Miércoles","Jueves","Viernes","Sábado","Domingo"];
 const SLOTS=[["Desayuno",DES],["Colación",COL],["Comida",COM],["Cena",CEN]];
 /* kcal, proteína, carbohidratos y grasa: por 100 g o 100 ml; por pieza si la unidad es pza. Valores aproximados. */
@@ -144,7 +165,13 @@ const OPT={sexo:["Mujer","Hombre"],act:["Sedentario","Ligera","Moderada","Alta"]
 const CAPS=["Poco o nada de ejercicio","Ejercicio 1-3 días por semana","Ejercicio 3-5 días por semana","Ejercicio 6-7 días por semana"];
 const CATC={"Bajo peso":"#5c97ff","Peso normal":"#2fd3a0","Sobrepeso":"#ffa23a","Obesidad":"#ff6b6b"};
 const $=s=>document.querySelector(s);
-const S={sexo:0,act:1,obj:1,plan:null,res:null,lista:null,done:[]};
+const S={sexo:0,act:1,obj:1,plan:null,res:null,lista:null,done:[],pf:{veg:0,lac:0,glu:0,hue:0,nue:0}};
+const PF=[["veg","Vegetariano"],["lac","Sin lácteos"],["glu","Sin gluten"],["hue","Sin huevo"],["nue","Sin frutos secos"]];
+const FL={veg:["Pechuga de pollo","Filete de pescado","Carne de res magra","Atún en agua (lata)"],lac:["Leche","Yogurt griego","Yogurt natural","Queso panela","Queso Oaxaca"],glu:["Avena","Pasta integral","Granola","Pan integral (rebanada)"],hue:["Huevo"],nue:["Nueces","Almendras","Cacahuate natural"]};
+const norm=s=>s.toLowerCase().normalize("NFD").replace(/[^a-z0-9 ]/g,"");
+const excl=k=>{if(PF.some(([f])=>S.pf[f]&&FL[f].includes(k)))return true;return norm($("#av").value).split(/[,;]+/).map(t=>t.trim()).filter(t=>t.length>2).some(t=>(" "+norm(k)).includes(" "+t))};
+const ok=([,g])=>!Object.keys(g).some(excl);
+function drawChips(){$("#chips").innerHTML=PF.map(([k,n])=>`<button class="chip${S.pf[k]?" on":""}" data-k="${k}">${n}</button>`).join("")}
 const catIMC=i=>i<18.5?"Bajo peso":i<25?"Peso normal":i<30?"Sobrepeso":"Obesidad";
 const fmtC=(n,c)=>{const u=ING[n][1];if(u==="pza")return Math.ceil(c-1e-9)+" pza";const r=Math.ceil(c/10)*10;return r>=1000?(r/1000).toFixed(2)+(u==="g"?" kg":" L"):r+" "+u};
 const fmtP=(n,c)=>{const u=ING[n][1];if(u==="pza"){const x=c<1.5?Math.round(c*2)/2:Math.round(c);return x+" pza"}return Math.round(c/5)*5+" "+u};
@@ -160,11 +187,12 @@ document.addEventListener("click",e=>{
  if(e.target.id==="share")share();
  if(e.target.id==="again")calcular(true);
  if(e.target.id==="wadd")addW();
+ const c=e.target.closest(".chip");if(c){S.pf[c.dataset.k]=S.pf[c.dataset.k]?0:1;c.classList.toggle("on");save()}
  if(e.target.id==="wuse"){$("#peso").value=S.w[S.w.length-1].w;save();show("perfil")}
  const x=e.target.closest("[data-del]");if(x){S.w.splice(+x.dataset.del,1);store("nsw",S.w);drawProg()}
 });
 function show(k){["perfil","menu","lista","progreso"].forEach(s=>{$("#"+s).classList.toggle("on",s===k)});document.querySelectorAll("nav button").forEach(b=>b.classList.toggle("on",b.dataset.t===k));window.scrollTo(0,0);document.querySelectorAll("#"+k+" .card").forEach((c,i)=>c.style.setProperty("--i",Math.min(i,9)));document.querySelectorAll("#"+k+" [data-n]").forEach(el=>{const to=+el.dataset.n,dc=(el.dataset.n.split(".")[1]||"").length,t0=performance.now();const f=t=>{const p=Math.min(1,(t-t0)/900),e=1-Math.pow(1-p,3);el.textContent=(to*e).toFixed(dc);if(p<1)requestAnimationFrame(f)};requestAnimationFrame(f)})}
-function save(){store("ns",{v:["peso","estatura","edad"].map(i=>$("#"+i).value),sexo:S.sexo,act:S.act,obj:S.obj})}
+function save(){store("ns",{v:["peso","estatura","edad"].map(i=>$("#"+i).value),sexo:S.sexo,act:S.act,obj:S.obj,pf:S.pf,av:$("#av").value})}
 
 function calcular(sh){
  const f=i=>parseFloat($("#"+i).value.replace(",","."));
@@ -176,14 +204,14 @@ function calcular(sh){
  const imc=peso/((est/100)**2);
  const tmb=10*peso+6.25*est-5*edad+(S.sexo?5:-161),gasto=tmb*ACTF[S.act];
  const meta=Math.round(Math.max(gasto+OBJA[S.obj],S.sexo?1500:1200));
- const factor=Math.max(.6,Math.min(2.2,meta/BASE));
- if(sh===true){S.ord={};SLOTS.forEach(([s,o])=>{const a=o.map((_,j)=>j);for(let j=a.length-1;j>0;j--){const k=Math.floor(Math.random()*(j+1));[a[j],a[k]]=[a[k],a[j]]}S.ord[s]=a})}else S.ord={};
- S.plan=DIAS.map((_,i)=>{const d={};SLOTS.forEach(([s,o])=>{const [n,g]=o[(S.ord[s]||[])[i]??i%o.length];d[s]=[n,Object.fromEntries(Object.entries(g).map(([k,v])=>[k,v*factor]))]});return d});
+ const opts=SLOTS.map(([s,o])=>[s,o.filter(ok)]),vac=opts.find(([,o])=>!o.length);if(vac){bad("No quedan platillos de "+vac[0].toLowerCase()+" con tus preferencias. Quita alguna e inténtalo de nuevo.");return}let factor=1;
+ if(sh===true){S.ord={};opts.forEach(([s,o])=>{const a=o.map((_,j)=>j);for(let j=a.length-1;j>0;j--){const k=Math.floor(Math.random()*(j+1));[a[j],a[k]]=[a[k],a[j]]}S.ord[s]=a})}else S.ord={};
+ const mk=f=>DIAS.map((_,i)=>{const d={};opts.forEach(([s,o])=>{const a=S.ord[s]||[],[n,g]=o[a.length===o.length?a[i%o.length]:i%o.length];d[s]=[n,Object.fromEntries(Object.entries(g).map(([k,v])=>[k,v*f]))]});return d});S.plan=mk(1);factor=Math.max(.6,Math.min(2.2,meta/(S.plan.reduce((a,d)=>a+SLOTS.reduce((b,[s])=>b+mac(d[s][1])[0],0),0)/7)));S.plan=mk(factor);
  const tot={};S.plan.forEach(d=>Object.values(d).forEach(([,g])=>{for(const k in g)tot[k]=(tot[k]||0)+g[k]}));
  const por={};for(const k in tot)(por[ING[k][0]]=por[ING[k][0]]||[]).push([k,tot[k]]);
  S.lista=Object.keys(por).map(c=>[CATS[c],por[c].sort((a,b)=>a[0].localeCompare(b[0],"es"))]).sort((a,b)=>a[0].localeCompare(b[0],"es"));
  S.done=[];store("nsd",S.done);
- S.res={imc,cat:catIMC(imc),tmb:Math.round(tmb),gasto:Math.round(gasto),meta,factor,avg:R(S.plan.reduce((a,d)=>a+SLOTS.reduce((b,[s])=>b+mac(d[s][1])[0],0),0)/7),obj:OBJN[S.obj],aviso:S.obj===0&&imc<18.5};
+ S.res={imc,cat:catIMC(imc),tmb:Math.round(tmb),gasto:Math.round(gasto),meta,factor,few:opts.filter(([,o])=>o.length<7).map(([s])=>s.toLowerCase()),avg:R(S.plan.reduce((a,d)=>a+SLOTS.reduce((b,[s])=>b+mac(d[s][1])[0],0),0)/7),obj:OBJN[S.obj],aviso:S.obj===0&&imc<18.5};
  save();drawMenu();drawLista();show("menu");
 }
 function drawMenu(){
@@ -191,7 +219,7 @@ function drawMenu(){
  $("#menu").innerHTML=`<h1>Menú semanal</h1><div class="cn"><span>Tu plan de 7 días</span><button id="again">Otro menú</button></div>
  <div class="card"><div class="sum"><div><div class="k">IMC</div><div class="big" data-n="${r.imc.toFixed(1)}">${r.imc.toFixed(1)}</div><div class="cat" style="color:${CATC[r.cat]}">${r.cat}</div></div>
  <div><div class="k">Kcal por día</div><div class="big" data-n="${r.meta}">${r.meta}</div><div class="k">basal ${r.tmb} · gasto ${r.gasto}</div></div></div>
- <div class="k" style="margin-top:12px">Objetivo: ${r.obj} · porciones ×${r.factor.toFixed(2)}<br>Promedio del plan: ${r.avg} kcal por día</div>
+ <div class="k" style="margin-top:12px">Objetivo: ${r.obj} · porciones ×${r.factor.toFixed(2)}<br>Promedio del plan: ${r.avg} kcal por día</div>${r.few.length?`<div class="warn">Con tus preferencias hay pocas opciones de ${r.few.join(", ")}: algunos platillos se repiten.</div>`:""}
  ${r.aviso?`<div class="warn">⚠ Tu IMC indica bajo peso; bajar de peso no es lo recomendable. Consulta a un profesional.</div>`:""}</div>`+
  DIAS.map((d,i)=>`<div class="card day" data-d="${i}"><h3>${d}<span><b class="tk">${R(dayM(i)[0])} kcal</b> <i>›</i></span></h3><div class="mc">${mline(dayM(i))}</div>${SLOTS.map(([s])=>`<div class="s">${s}</div><div class="n">${S.plan[i][s][0]} <span class="kc">${R(mac(S.plan[i][s][1])[0])} kcal</span></div>`).join("")}</div>`).join("");
 }
@@ -233,10 +261,10 @@ function drawProg(){
  $("#progreso").innerHTML=h;
 }
 $("#go").onclick=()=>calcular();
-["peso","estatura","edad"].forEach(i=>$("#"+i).addEventListener("input",save));
-S.w=load("nsw")||[];const sv=load("ns");if(sv){["peso","estatura","edad"].forEach((i,j)=>$("#"+i).value=sv.v[j]||"");["sexo","act","obj"].forEach(k=>{if(typeof sv[k]==="number")S[k]=sv[k]})}
+["peso","estatura","edad"].forEach(i=>$("#"+i).addEventListener("input",save));$("#av").addEventListener("input",save);
+S.w=load("nsw")||[];const sv=load("ns");if(sv){["peso","estatura","edad"].forEach((i,j)=>$("#"+i).value=sv.v[j]||"");["sexo","act","obj"].forEach(k=>{if(typeof sv[k]==="number")S[k]=sv[k]});if(sv.pf)S.pf=sv.pf;$("#av").value=sv.av||""}
 drawSeg();
-const empty=t=>`<h1>${t[0]}</h1><p class="sub">${t[1]}</p><div class="card empty"><b>Aún no hay datos</b><p>Completa tu perfil y toca «Calcular mi semana».</p></div>`;
+drawChips();const empty=t=>`<h1>${t[0]}</h1><p class="sub">${t[1]}</p><div class="card empty"><b>Aún no hay datos</b><p>Completa tu perfil y toca «Calcular mi semana».</p></div>`;
 $("#menu").innerHTML=empty(["Menú semanal","Tu plan de 7 días"]);$("#lista").innerHTML=empty(["Compras","Lo que necesitas esta semana"]);drawProg();
 if(sv&&sv.v&&sv.v.every(x=>x)){S.done=load("nsd")||[];const d=S.done;calcular();S.done=d;drawLista();show("perfil")}
 </script>
