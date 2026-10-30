@@ -1,6 +1,6 @@
-# NutriSemana
+# RutiAPP
 
-NutriSemana es una aplicación que calcula tu IMC y tus calorías diarias, arma un menú de 7 días con porciones ajustadas a tu objetivo y genera la lista de compras de la semana. Funciona como página web instalable en el celular, y también existe una versión de escritorio para Windows.
+RutiAPP es una aplicación que calcula tu IMC y tus calorías diarias, arma un menú de 7 días con porciones ajustadas a tu objetivo y genera la lista de compras de la semana. Funciona como página web instalable en el celular, y también existe una versión de escritorio para Windows.
 
 Sitio publicado: https://jesusftc.github.io/RutiApp/
 
@@ -31,6 +31,7 @@ Muestra un resumen y el plan de la semana:
 - **Kcal por día**: la meta calórica calculada para ti, junto con tu gasto basal y tu gasto total.
 - **Factor de porciones**: cuánto se escalan las cantidades de las recetas respecto al plan base.
 - Una tarjeta por día, de lunes a domingo, con cuatro comidas: desayuno, colación, comida y cena.
+- Un botón **Otro menú**, que genera una combinación distinta de platillos. Al usarlo, la lista de compras se actualiza y se reinician los artículos marcados.
 
 Al tocar un día se abre una hoja con las porciones exactas de cada ingrediente de ese día.
 
@@ -87,7 +88,7 @@ Las recetas están definidas para un plan base de 2000 kcal al día. Tus porcion
 factor = meta diaria / 2000      (limitado entre 0.70 y 1.60)
 ```
 
-Cada día se arma con una opción de desayuno, colación, comida y cena. Las opciones rotan a lo largo de la semana y, como hay entre 4 y 5 opciones por comida, algunas se repiten hacia el fin de semana.
+Cada día se arma con una opción de desayuno, colación, comida y cena. Hay 7 opciones por cada tipo de comida, así que ningún platillo se repite durante la semana. Con los mismos datos, el menú siempre sale en el mismo orden; el botón **Otro menú** baraja el orden de las opciones para obtener una semana distinta, sin cambiar tus calorías ni tus porciones.
 
 ### Lista de compras
 
@@ -118,7 +119,7 @@ Al abrir la app de nuevo, tu perfil se recupera y el plan se recalcula con esos 
 | `app.py` | Interfaz de escritorio hecha con Tkinter. |
 | `cristal.py` | Utilidades gráficas con Pillow para el estilo de cristal. |
 | `logica.py` | Datos de ingredientes y comidas, y funciones de cálculo de la versión de escritorio. |
-| `NutriSemana.spec`, `crear_exe.bat` | Archivos para compilar la versión de escritorio con PyInstaller. |
+| `crear_exe.bat` | Script para compilar la versión de escritorio con PyInstaller. |
 
 ## Versión de escritorio
 
@@ -133,10 +134,10 @@ Para generar el ejecutable de Windows:
 
 ```
 python -m pip install pyinstaller
-python -m PyInstaller --noconfirm --clean --onefile --windowed --name NutriSemana app.py
+python -m PyInstaller --noconfirm --clean --onefile --windowed --name RutiAPP app.py
 ```
 
-El archivo `NutriSemana.exe` queda en la carpeta `dist`.
+El archivo `RutiAPP.exe` queda en la carpeta `dist`.
 
 ## Publicar la versión web
 
@@ -147,6 +148,6 @@ El archivo `NutriSemana.exe` queda en la carpeta `dist`.
 
 ## Limitaciones
 
-- El menú usa un conjunto fijo de recetas de cocina mexicana; no contempla alergias, intolerancias ni dietas especiales como la vegetariana.
+- El menú usa un conjunto fijo de 7 opciones por comida, de cocina mexicana; no contempla alergias, intolerancias ni dietas especiales como la vegetariana.
 - Las calorías son una estimación basada en una fórmula general, y no sustituyen una evaluación individual.
 - El plan se diseñó para personas adultas sanas.

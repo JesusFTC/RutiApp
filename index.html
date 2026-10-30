@@ -105,21 +105,30 @@ const DES=[["Avena con plátano y nueces",{"Avena":60,"Leche":250,"Plátano":1,"
 ["Huevos revueltos con frijoles y tortillas",{"Huevo":3,"Frijoles cocidos":100,"Tortilla de maíz":3,"Jitomate":1}],
 ["Yogurt griego con papaya y granola",{"Yogurt griego":200,"Papaya":150,"Granola":40}],
 ["Omelette de espinaca con pan integral",{"Huevo":3,"Espinaca":50,"Pan integral (rebanada)":2,"Queso panela":40}],
-["Chilaquiles verdes con pollo",{"Tortilla de maíz":3,"Pechuga de pollo":80,"Tomate verde":100,"Queso panela":30}]];
+["Chilaquiles verdes con pollo",{"Tortilla de maíz":3,"Pechuga de pollo":80,"Tomate verde":100,"Queso panela":30}],
+["Hot cakes de avena con fresas",{"Avena":50,"Huevo":1,"Leche":150,"Fresa":100}],
+["Molletes con frijoles y jitomate",{"Pan integral (rebanada)":2,"Frijoles cocidos":80,"Queso Oaxaca":40,"Jitomate":1}]];
 const COM=[["Pechuga a la plancha con arroz y ensalada",{"Pechuga de pollo":150,"Arroz":70,"Lechuga":60,"Jitomate":1,"Aceite de oliva":10}],
 ["Lentejas con verduras y tortillas",{"Lentejas":70,"Zanahoria":1,"Calabacita":1,"Tortilla de maíz":2}],
 ["Pescado al horno con papa y brócoli",{"Filete de pescado":160,"Papa":200,"Brócoli":120,"Limón":1}],
 ["Tacos de res con nopales",{"Carne de res magra":130,"Tortilla de maíz":3,"Nopales":100,"Cebolla":1}],
-["Pasta integral con atún y verduras",{"Pasta integral":80,"Atún en agua (lata)":1,"Jitomate":2,"Calabacita":1}]];
+["Pasta integral con atún y verduras",{"Pasta integral":80,"Atún en agua (lata)":1,"Jitomate":2,"Calabacita":1}],
+["Caldo de pollo con verduras",{"Pechuga de pollo":120,"Zanahoria":1,"Calabacita":1,"Papa":100,"Arroz":50}],
+["Bowl de res con arroz y brócoli",{"Carne de res magra":120,"Arroz":70,"Brócoli":100,"Zanahoria":1}]];
 const CEN=[["Quesadillas de champiñón",{"Tortilla de maíz":3,"Queso Oaxaca":50,"Champiñones":100}],
 ["Ensalada de atún con aguacate",{"Atún en agua (lata)":1,"Lechuga":80,"Aguacate":0.5,"Pan integral (rebanada)":2}],
 ["Sándwich de pollo",{"Pan integral (rebanada)":2,"Pechuga de pollo":100,"Lechuga":30,"Jitomate":1}],
 ["Sopa de verduras con huevo",{"Zanahoria":1,"Calabacita":1,"Papa":100,"Huevo":2}],
-["Tostadas de frijol con aguacate",{"Tostadas horneadas":3,"Frijoles cocidos":100,"Aguacate":0.5,"Lechuga":40}]];
+["Tostadas de frijol con aguacate",{"Tostadas horneadas":3,"Frijoles cocidos":100,"Aguacate":0.5,"Lechuga":40}],
+["Omelette de champiñón",{"Huevo":3,"Champiñones":100,"Queso panela":30}],
+["Ensalada de lentejas",{"Lentejas":60,"Jitomate":1,"Pepino":1,"Lechuga":40,"Aceite de oliva":10}]];
 const COL=[["Manzana con almendras",{"Manzana":1,"Almendras":20}],
 ["Palitos de zanahoria y pepino con limón",{"Zanahoria":1,"Pepino":1,"Limón":1}],
 ["Yogurt natural con fresas",{"Yogurt natural":150,"Fresa":100}],
-["Plátano con cacahuates",{"Plátano":1,"Cacahuate natural":20}]];
+["Plátano con cacahuates",{"Plátano":1,"Cacahuate natural":20}],
+["Yogurt griego con nueces",{"Yogurt griego":150,"Nueces":15}],
+["Tostadas con aguacate",{"Tostadas horneadas":2,"Aguacate":0.5}],
+["Papaya con yogurt natural",{"Papaya":150,"Yogurt natural":100}]];
 const DIAS=["Lunes","Martes","Miércoles","Jueves","Viernes","Sábado","Domingo"];
 const SLOTS=[["Desayuno",DES],["Colación",COL],["Comida",COM],["Cena",CEN]];
 const ACTF=[1.2,1.375,1.55,1.725],OBJA=[-400,0,300],OBJN=["bajar de peso","mantener peso","subir masa muscular"];
@@ -141,11 +150,12 @@ document.addEventListener("click",e=>{
  const d=e.target.closest(".day");if(d){openDay(+d.dataset.d);return}
  if(e.target.id==="sh")$("#sh").classList.remove("on");
  if(e.target.id==="share")share();
+ if(e.target.id==="again")calcular(true);
 });
 function show(k){["perfil","menu","lista"].forEach(s=>{$("#"+s).classList.toggle("on",s===k)});document.querySelectorAll("nav button").forEach(b=>b.classList.toggle("on",b.dataset.t===k));window.scrollTo(0,0);document.querySelectorAll("#"+k+" .card").forEach((c,i)=>c.style.setProperty("--i",Math.min(i,9)));document.querySelectorAll("#"+k+" [data-n]").forEach(el=>{const to=+el.dataset.n,dc=(el.dataset.n.split(".")[1]||"").length,t0=performance.now();const f=t=>{const p=Math.min(1,(t-t0)/900),e=1-Math.pow(1-p,3);el.textContent=(to*e).toFixed(dc);if(p<1)requestAnimationFrame(f)};requestAnimationFrame(f)})}
 function save(){store("ns",{v:["peso","estatura","edad"].map(i=>$("#"+i).value),sexo:S.sexo,act:S.act,obj:S.obj})}
 
-function calcular(){
+function calcular(sh){
  const f=i=>parseFloat($("#"+i).value.replace(",","."));
  let peso=f("peso"),est=f("estatura");const edad=parseInt($("#edad").value);
  const er=$("#err");er.textContent="";er.classList.remove("shk");const bad=m=>{er.textContent=m;void er.offsetWidth;er.classList.add("shk")};
@@ -156,7 +166,8 @@ function calcular(){
  const tmb=10*peso+6.25*est-5*edad+(S.sexo?5:-161),gasto=tmb*ACTF[S.act];
  const meta=Math.round(Math.max(gasto+OBJA[S.obj],S.sexo?1500:1200));
  const factor=Math.max(.7,Math.min(1.6,meta/2000));
- S.plan=DIAS.map((_,i)=>{const d={};SLOTS.forEach(([s,o])=>{const [n,g]=o[i%o.length];d[s]=[n,Object.fromEntries(Object.entries(g).map(([k,v])=>[k,v*factor]))]});return d});
+ if(sh===true){S.ord={};SLOTS.forEach(([s,o])=>{const a=o.map((_,j)=>j);for(let j=a.length-1;j>0;j--){const k=Math.floor(Math.random()*(j+1));[a[j],a[k]]=[a[k],a[j]]}S.ord[s]=a})}else S.ord={};
+ S.plan=DIAS.map((_,i)=>{const d={};SLOTS.forEach(([s,o])=>{const [n,g]=o[(S.ord[s]||[])[i]??i%o.length];d[s]=[n,Object.fromEntries(Object.entries(g).map(([k,v])=>[k,v*factor]))]});return d});
  const tot={};S.plan.forEach(d=>Object.values(d).forEach(([,g])=>{for(const k in g)tot[k]=(tot[k]||0)+g[k]}));
  const por={};for(const k in tot)(por[ING[k][0]]=por[ING[k][0]]||[]).push([k,tot[k]]);
  S.lista=Object.keys(por).map(c=>[CATS[c],por[c].sort((a,b)=>a[0].localeCompare(b[0],"es"))]).sort((a,b)=>a[0].localeCompare(b[0],"es"));
@@ -166,7 +177,7 @@ function calcular(){
 }
 function drawMenu(){
  const r=S.res;
- $("#menu").innerHTML=`<h1>Menú semanal</h1><p class="sub">Tu plan de 7 días</p>
+ $("#menu").innerHTML=`<h1>Menú semanal</h1><div class="cn"><span>Tu plan de 7 días</span><button id="again">Otro menú</button></div>
  <div class="card"><div class="sum"><div><div class="k">IMC</div><div class="big" data-n="${r.imc.toFixed(1)}">${r.imc.toFixed(1)}</div><div class="cat" style="color:${CATC[r.cat]}">${r.cat}</div></div>
  <div><div class="k">Kcal por día</div><div class="big" data-n="${r.meta}">${r.meta}</div><div class="k">basal ${r.tmb} · gasto ${r.gasto}</div></div></div>
  <div class="k" style="margin-top:12px">Objetivo: ${r.obj} · porciones ×${r.factor.toFixed(2)}</div>
@@ -189,7 +200,7 @@ async function share(){
  let t="LISTA DE COMPRAS SEMANAL\n";S.lista.forEach(([c,it])=>{t+=`\n${c.toUpperCase()}\n`;it.forEach(([k,v])=>{t+=`  [${S.done.includes(k)?"x":" "}] ${k} - ${fmtC(k,v)}\n`})});
  try{if(navigator.share)await navigator.share({title:"Lista de compras",text:t});else{await navigator.clipboard.writeText(t);alert("Lista copiada.")}}catch(e){}
 }
-$("#go").onclick=calcular;
+$("#go").onclick=()=>calcular();
 ["peso","estatura","edad"].forEach(i=>$("#"+i).addEventListener("input",save));
 const sv=load("ns");if(sv){["peso","estatura","edad"].forEach((i,j)=>$("#"+i).value=sv.v[j]||"");["sexo","act","obj"].forEach(k=>{if(typeof sv[k]==="number")S[k]=sv[k]})}
 drawSeg();
